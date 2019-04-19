@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <script src = "/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        let map, marker;
+        let lats = 30.7333;
+        let lons = 76.7794;
+        socket.on('initMap', function(result) {
+          initMap();
+          document.getElementById('loading').innerHTML = "";
+          socket.emit('move', {lats: lats, lons: lons});
+        });
+        socket.on('move', function(coordinates) {
+          moveMarker(map, marker, coordinates.lat, coordinates.lon);
+          lats = coordinates.lat;
+          lons = coordinates.lon;
+          socket.emit('move', {lats: lats, lons: lons});
+        });
+        const initMap = () => {
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: lats, lng: lons},
+            zoom: 15
+          });
+          marker = new google.maps.Marker({
+                 position: new google.maps.LatLng(30.7333, 76.7794),
+                 map: map
+              });
+              marker.setMap( map ); 
+          }
+        const moveMarker = ( map, marker, lat, lon ) => {
+          setTimeout( function(){
+            marker.setPosition( new google.maps.LatLng( lat, lon ) );
+            map.panTo( new google.maps.LatLng( lat, lon ) );
+          }, 1500 );
+        }
+      </script>
+      <script src="http://maps.googleapis.com/maps/api/js?key=&callback=initMap"
+      async defer></script>
+    <style type="text/css">
+      #loading {
+        text-align: center;
+        font: italic bold 20px Georgia, serif;
+      }
+      #map {
+        height: 100%;
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+<div id="loading">Loading...</div>
+<div id="map" style="height: 100%"></div>
+  </body>
+</html>

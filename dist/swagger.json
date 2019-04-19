@@ -1,0 +1,366 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"title": "Booking Application",
+		"description": "Allows users to book rides.",
+		"version": "0.1"
+	},
+	"servers": [
+		{
+			"url": "http://localhost:3000"
+		}
+	],
+	"paths": {
+		"/register": {
+			"post": {
+				"tags":["Registration"],
+				"summary":"New user registration!",
+				"description": "Registers a new user with name, email and password, mobile number and user type.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									},
+									"mobile_num": {
+										"type": "string"
+									},
+									"vehicle": {
+										"type": "string"
+									},
+									"type": {
+										"type": "string"
+									}
+								}
+							}							
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success!",
+						"content": {
+							"application/json; charset=utf-8": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"servers": [
+					{
+						"url": "http://localhost:3000"
+					}
+				]
+			},
+			"servers": [
+				{
+					"url": "http://localhost:3000"
+				}
+			]
+		},
+		"/login": {
+			"post": {
+				"tags":["Login"],
+				"summary":"Login!",
+				"description": "Login by providing email, password and user type!",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string",
+										"minimum": 3
+									},
+									"type": {
+										"type": "string",
+										"minimum": 3
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success!",
+						"content": {
+							"text/html; charset=utf-8": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"servers": [
+					{
+						"url": "http://localhost:3000"
+					}
+				]
+			},
+			"servers": [
+				{
+					"url": "http://localhost:3000"
+				}
+			]
+		},
+		"/bookings/new": {
+			"post": {
+				"tags":["Booking"],
+				"summary":"Create booking!",
+				"description": "Create booking by providing lat_from, lon_from, lat_to, lon_to and token!",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"lat_from": {
+										"type": "number"
+									},
+									"lon_from": {
+										"type": "number"
+									},
+									"lat_to": {
+										"type": "number"
+									},
+									"lon_to": {
+										"type": "number"
+									},
+									"token": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success!",
+						"content": {
+							"text/html; charset=utf-8": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"servers": [
+					{
+						"url": "http://localhost:3000"
+					}
+				]
+			},
+			"servers": [
+				{
+					"url": "http://localhost:3000"
+				}
+			]
+		},
+		"/bookings/approve": {
+			"post": {
+				"tags":["Booking"],
+				"summary":"Approve booking!",
+				"description": "Approve booking by providing driver_id, arrival time, booking_id and admin token!",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"booking_id": {
+										"type": "integer"
+									},
+									"driver_assigned": {
+										"type": "integer"
+									},
+									"arrival": {
+										"type": "string"
+									},
+									"token": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success!",
+						"content": {
+							"text/html; charset=utf-8": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"servers": [
+					{
+						"url": "http://localhost:3000"
+					}
+				]
+			},
+			"servers": [
+				{
+					"url": "http://localhost:3000"
+				}
+			]
+		},
+		"/bookings/status": {
+			"post": {
+				"tags":["Booking"],
+				"summary":"Check booking status!",
+				"description": "Check booking status by providing booking_id and customer token!",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"booking_id": {
+										"type": "integer"
+									},
+									"token": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success!",
+						"content": {
+							"text/html; charset=utf-8": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"servers": [
+					{
+						"url": "http://localhost:3000"
+					}
+				]
+			},
+			"servers": [
+				{
+					"url": "http://localhost:3000"
+				}
+			]
+		},
+		"/bookings/getAll": {
+			"post": {
+				"tags":["Booking"],
+				"summary":"View all bookings!",
+				"description": "View all bookings both pending, approved and completed  by providing admin token!",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"token": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success!",
+						"content": {
+							"text/html; charset=utf-8": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"servers": [
+					{
+						"url": "http://localhost:3000"
+					}
+				]
+			},
+			"servers": [
+				{
+					"url": "http://localhost:3000"
+				}
+			]
+		},
+		"/bookings/complete": {
+			"post": {
+				"tags":["Booking"],
+				"summary":"Complete booking!",
+				"description": "Complete booking by providing booking_id and driver token!",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"booking_id": {
+										"type": "integer"
+									},
+									"token": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success!",
+						"content": {
+							"text/html; charset=utf-8": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"servers": [
+					{
+						"url": "http://localhost:3000"
+					}
+				]
+			},
+			"servers": [
+				{
+					"url": "http://localhost:3000"
+				}
+			]
+		}
+	}
+}
