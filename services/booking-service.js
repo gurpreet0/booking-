@@ -16,15 +16,9 @@ let emailCustomer;
  */
 const insertBooking = (booking, customer_id, fare) => {
     return new Promise((resolve, reject) => {
-        //const inner = [];
         let values =[];
-        //values.push(customer_id,`CURRENT_TIMESTAMP`,booking.lat_from,booking.lon_from,booking.lat_to,booking.lon_to,fare,'PENDING')
         let sqlQuery = `INSERT INTO booking ( booking_id, booked_by, lat_from, lon_from, lat_to, lon_to, fare, status) VALUES (?);`;
         values.push(null, customer_id,booking.lat_from,booking.lon_from,booking.lat_to,booking.lon_to,fare,'PENDING');
-        // inner.push(null, customer_id,`CURRENT_TIMESTAMP` , booking.lat_from, booking.lon_from, booking.lat_to, booking.lon_to, fare, 'PENDING');
-        // const params = [];
-        // params.push(inner);
-        console.log(values)
         connection.query(sqlQuery, [values], (err, rows, fields) => {
             if(err)
             reject({code: constants.responseFlags.INTERNAL_ERROR, message: err, data: null});
@@ -63,8 +57,6 @@ const requestBooking = (booking, user) => {
             const fare = 25.60;
             const customer_id = yield generalServices.getIdByEmail(user.email, 'customer');
             const bookingStatus = yield insertBooking(booking, customer_id, fare);
-            //const bookingInfo = yield generalServices.getBookingId(customer_id);
-            //bookingStatus.data.bookingId = bookingInfo.data[0].booked_id;
             bookings.set(user.email, bookingStatus.booked_id);
             delete bookingStatus.data.token;
             return bookingStatus;

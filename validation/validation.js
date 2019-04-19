@@ -111,38 +111,6 @@ const validateCompleteBooking = (body) => {
     const result = Joi.validate(body, loginSchema);
     return result;
 }
-/**
- * 
- * @param {*} changePasswordDetails 
- */
-const validateChangePassword = (changePasswordDetails) => {
-    const changePasswordSchema = {
-        password    : passwordSchema,
-        passwordNew : passwordSchema
-    };
-    const result = Joi.validate(changePasswordDetails, changePasswordSchema);
-    return result;
-}
-/**
- * 
- * @param {*} email 
- */
-const validateForgotStep1 = (email) => {
-    const result = Joi.validate(email, emailSchema);
-    return result;
-}
-/**
- * 
- * @param {*} resetDetails 
- */
-const validateForgotStep3 = (resetDetails) => {
-    const resetSchema = {
-        resetCode   : resetCodeSchema,
-        passwordNew : passwordSchema
-    }
-    const result = Joi.validate(resetDetails, resetSchema);
-    return result;
-}
 
 module.exports.validateRegistration       = validateRegistration;
 module.exports.validateLogin              = validateLogin;
@@ -151,6 +119,3 @@ module.exports.validateApproveBooking     = validateApproveBooking;
 module.exports.validateCheckBookingStatus = validateCheckBookingStatus;
 module.exports.validateViewAllBookings    = validateViewAllBookings;
 module.exports.validateCompleteBooking    = validateCompleteBooking;
-module.exports.validateChangePassword     = validateChangePassword;
-module.exports.validateForgotStep1        = validateForgotStep1;
-module.exports.validateForgotStep3        = validateForgotStep3;
