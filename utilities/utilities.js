@@ -1,9 +1,3 @@
-/*
-        This file provides functions for following operations :-
-         - sending reset code on email
-         - generating random 6 digit reset code
-*/
-//const sendGrid = require('@sendgrid/mail');
 const bcrypt   = require('bcrypt');
 /**
  * 
@@ -24,5 +18,3 @@ const verifyPasswords = async(inputPassword, hashedPassword) => {
 
 module.exports.hash            = hash;
 module.exports.verifyPasswords = verifyPasswords;
-module.exports.getResetCode    = getResetCode;
-module.exports.sendResetCode   = sendResetCode;
