@@ -1,6 +1,8 @@
 /*
         This file contains controllers for booking routes.
 */
+const _= require('underscore');
+const constants = require('./../properties/constants');
 const service  = require('../services/booking-service.js');
 const generalService  = require('../services/general-services.js');
 const Bluebird = require('bluebird');
@@ -107,6 +109,8 @@ const blockDriver = (driverID) => {
     return new Promise((resolve, reject) => {
         Bluebird.coroutine(function*() {
             const result = yield generalService.blockUnblock(driverID);
+            if(_.isEmpty(result))
+            return {message: constants.responseMessages.INTERNAL_ERROR,  status: constants.responseFlags.INTERNAL_ERROR, data: {}};
             return {result};
         })().then((result) => resolve(result)).catch((err) => reject(err));
     });

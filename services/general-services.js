@@ -74,7 +74,7 @@ const blockUnblock = (driverID)=>{
                 
                 await agenda.start();
                 console.log('after agenda start');
-                await agenda.schedule('in 20 minutes', 'unblock blocked drivers');
+                await agenda.schedule('in 1 minutes', 'unblock blocked drivers');
             })();
         });
     });

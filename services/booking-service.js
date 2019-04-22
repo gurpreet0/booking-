@@ -2,6 +2,7 @@
         This file contains methods which provides booking related services.
 */
 const Bluebird        = require('bluebird');
+const _               = require('underscore');
 const constants       = require('../properties/constants.js');
 const generalServices = require('./general-services.js');
 const bookings        = new Map();
@@ -37,11 +38,42 @@ const isDriverBlocked = (driverId) => {
             if(err)
             reject({code: constants.responseFlags.INTERNAL_ERROR, message: err, data: null});
             else
-            resolver(result[0].block_status);
+            resolve(result);
           });
     });
 }
 
+const ifBookingExists = (email)=>{
+    return new Promise((resolve, reject)=>{
+        let values =[];
+        let sqlQuery = `SELECT status FROM booking WHERE booked_by = (SELECT customer_id FROM customer WHERE email = ?)`;
+        values.push(email);
+        connection.query(sqlQuery, [values], (err, rows, fields) => {
+            if(err)
+            reject({code: constants.responseFlags.INTERNAL_ERROR, message: err, data: null});
+            else{
+                resolve(rows);
+            }
+        });
+    });
+}
+
+
+const ifDriverBusy = (id)=>{
+    return new Promise((resolve, reject)=>{
+        let values =[];
+        let sqlQuery = `SELECT status FROM booking WHERE driver_assigned = ? AND status != 'COMPLETED'`;
+        values.push(id);
+        connection.query(sqlQuery, [values], (err, rows, fields) => {
+            if(err) {
+                reject({code: constants.responseFlags.INTERNAL_ERROR, message: err, data: null});
+            }
+            else{
+                resolve(rows);
+            }
+        });
+    });
+}
 
 
 /**
@@ -52,14 +84,18 @@ const isDriverBlocked = (driverId) => {
 const requestBooking = (booking, user) => {
     return new Promise((resolve, reject) => {
         Bluebird.coroutine(function*() {
-            if(bookings.has(user.email))
+            const status = yield ifBookingExists(user.email);
+            if(_.isEmpty(status)|| status[0].status == 'COMPLETED')
+            {
+                const fare = 25.60;
+                const customer_id = yield generalServices.getIdByEmail(user.email, 'customer');
+                const bookingStatus = yield insertBooking(booking, customer_id, fare);
+                bookings.set(user.email, bookingStatus.booked_id);
+                delete bookingStatus.data.token;
+                return bookingStatus;
+            }
+            else
             return reject({code: constants.responseFlags.BOOKING_PENDING, message: constants.responseMessages.BOOKING_PENDING, data: booking});
-            const fare = 25.60;
-            const customer_id = yield generalServices.getIdByEmail(user.email, 'customer');
-            const bookingStatus = yield insertBooking(booking, customer_id, fare);
-            bookings.set(user.email, bookingStatus.booked_id);
-            delete bookingStatus.data.token;
-            return bookingStatus;
         })().then((result) => resolve(result), (err) => reject(err));
     });
 }
@@ -71,11 +107,13 @@ const requestBooking = (booking, user) => {
 const approveBooking = (booking, assigned_by) => {
     return new Promise(async(resolve, reject) => {
         let blockStatus = await isDriverBlocked(booking.driver_assigned);
-        if( drivers.has(booking.driver_assigned)) {
-            reject({code: constants.responseFlags.DRIVER_BUSY, message: constants.responseMessages.DRIVER_BUSY, data: {assigned_booking: drivers.get(booking.driver_assigned)}});
+        let driverBusy = await ifDriverBusy(booking.driver_assigned);
+        if( driverBusy[0] && driverBusy[0].status == 'APPROVED') {
+            return reject({code: constants.responseFlags.DRIVER_BUSY, message: constants.responseMessages.DRIVER_BUSY, data: {driver_id: booking.driver_assigned}});
         }
-        if( blockStatus ) {
-            reject({code: constants.responseFlags.DRIVER_BLOCKED, message: constants.responseMessages.DRIVER_BLOCKED, data: {driver_id: booking.driver_assigned}});
+        
+        if( !_.isEmpty(blockStatus) && blockStatus[0].block_status ) {
+            return reject({code: constants.responseFlags.DRIVER_BLOCKED, message: constants.responseMessages.DRIVER_BLOCKED, data: {driver_id: booking.driver_assigned}});
         }
         else {
             const values = [];
